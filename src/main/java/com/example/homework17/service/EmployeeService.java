@@ -6,46 +6,44 @@ import com.example.homework17.exception.EmployeeStorageIsFullException;
 import com.example.homework17.model.Employee;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EmployeeService {
 
     private final int Size = 5;
-    private final List<Employee> employees;
+    private final Map <String,Employee> employees;
 
     public EmployeeService() {
-        this.employees = new ArrayList<>();
+        this.employees = new HashMap<>();
     }
 
     public Employee add (String firstName, String lastName) {
        Employee employee = new Employee(firstName, lastName);
-       if (employees.contains(employee))
+       if (employees.containsKey(employee.getFullName()))
            throw new EmployeeAlreadyAddedException();
        if (employees.size() >= Size) {
            throw new EmployeeStorageIsFullException();
        }
-       employees.add(employee);
+       employees.put(employee.getFullName(), employee);
        return employee;
     }
         public Employee remove (String firstName, String lastName) {
         Employee employee = new Employee(firstName, lastName);
-            if (employees.contains(employee)) {
-             employees.remove(employee);
-             return employee;
+            if (employees.containsKey(employee.getFullName())) {
+                return employees.remove(employee.getFullName());
             }
         throw new EmployeeNotFoundException();
     }
     public Employee find (String firstName, String lastName) {
         Employee employee = new Employee(firstName, lastName);
-        if (employees.contains(employee)) {
-            return employee;
+        if (employees.containsKey(employee.getFullName())) {
+            return employees.get(employee.getFullName());
         }
         throw new EmployeeNotFoundException();
     }
-    public List<Employee> findAll () {
-        return new ArrayList<>(employees);
+    public Collection <Employee> findAll () {
+        return Collections.unmodifiableCollection(employees.values());
     }
 
 }
